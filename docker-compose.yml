@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: task-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-taskdb}
+      POSTGRES_USER: ${DB_USER:-taskuser}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-taskpass}
+    volumes:
+      - task-data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - backend-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  backend:
+    build:
+      context: ./backend
+    container_name: task-backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: database
+      DB_NAME: ${DB_NAME:-taskdb}
+      DB_USER: ${DB_USER:-taskuser}
+      DB_PASSWORD: ${DB_PASSWORD:-taskpass}
+      DB_PORT: ${DB_PORT:-5432}
+      PORT: ${BACKEND_PORT:-3000}
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - backend-net
+      - frontend-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: task-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      - API_URL=${API_URL:-http://backend:3000}
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - frontend-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+networks:
+  backend-net:
+    driver: bridge
+  frontend-net:
+    driver: bridge
+
+volumes:
+  task-data:
+    name: task-db-data
