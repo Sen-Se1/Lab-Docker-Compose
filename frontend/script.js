@@ -3,6 +3,7 @@ const API_BASE = '/api';
 const taskList = document.getElementById('taskList');
 const taskTitle = document.getElementById('taskTitle');
 const taskDesc = document.getElementById('taskDesc');
+const taskStatus = document.getElementById('taskStatus');
 const addTaskBtn = document.getElementById('addTaskBtn');
 const refreshBtn = document.getElementById('refreshBtn');
 const backendStatus = document.getElementById('backendStatus');
@@ -57,6 +58,7 @@ function renderTasks(tasks) {
 async function addTask() {
     const title = taskTitle.value;
     const description = taskDesc.value;
+    const status = taskStatus.value;
 
     if (!title) return alert('Title is required');
 
@@ -64,7 +66,7 @@ async function addTask() {
         const res = await fetch(`${API_BASE}/tasks`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, description, status: 'pending' })
+            body: JSON.stringify({ title, description, status })
         });
 
         if (res.ok) {
