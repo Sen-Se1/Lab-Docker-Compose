@@ -28,16 +28,10 @@ L'application suit une structure classique à trois niveaux :
 
 1.  **Cloner le projet** (ou copier les fichiers).
 2.  **Configurer l'environnement** :
-    Vérifiez le fichier `.env` à la racine :
-    ```env
-    DB_NAME=taskdb
-    DB_USER=taskuser
-    DB_PASSWORD=taskpass
-    # ... autres variables
-    ```
+    Vérifiez le fichier `.env` à la racine.
 3.  **Lancer l'application** :
     ```bash
-    docker-compose up --build
+    docker-compose up --build -d
     ```
 4.  **Accéder à l'interface** :
     Ouvrez votre navigateur sur [http://localhost](http://localhost).
@@ -55,14 +49,89 @@ L'application suit une structure classique à trois niveaux :
 │   └── index.html      # UI Premium
 ├── db/                 # Scripts de base de données
 │   └── init.sql        # Initialisation du schéma
+├── screenshots/        # Captures d'écran de validation
 ├── .env                # Variables d'environnement
 ├── .gitignore          # Fichiers ignorés par Git
 └── docker-compose.yml  # Orchestration des services
 ```
 
-## 🔐 Bonnes pratiques DevOps appliquées
+---
 
-- **Images légères** : Utilisation de `node:18-alpine` et `nginx:alpine`.
-- **User non-root** : Les conteneurs ne s'exécutent pas avec les droits root.
-- **Resource Limits** : CPU limité à 0.5 et RAM à 512Mo par service.
-- **Volumes** : Persistance des données d'inventaire garantissant qu'aucune donnée n'est perdue au redémarrage.
+## 🧪 Tests et Validation
+
+### Liste des tests effectués (Réf. Partie 6.2)
+1.  **Validation de l'état des services** : Vérification que tous les conteneurs sont `Up` et `healthy`.
+2.  **Vérification de la connectivité Backend -> Database** : Les logs confirment que l'API peut interroger PostgreSQL.
+3.  **Test de l'isolation réseau** : Tentative de connexion directe du Frontend vers la Database (doit échouer).
+4.  **Test de l'interface Frontend** : Affichage correct des données initiales.
+5.  **Test d'ajout de données** : Insertion d'une nouvelle tâche via le formulaire.
+6.  **Vérification des limites de ressources** : Contrôle des CPU/RAM consommés.
+7.  **Analyse de la taille d'image** : Gain obtenu grâce au multi-stage build.
+
+### Résultats obtenus
+-   **Connectivité** : Succès. Le backend affiche `Backend listening on port 3000` et répond aux requêtes API.
+-   **Isolation** : Succès. Le frontend est limité au réseau `frontend-net` et ne peut pas résoudre le nom d'hôte `database`.
+-   **Performance** : Les limites de 512Mo de RAM sont respectées pour chaque service.
+
+---
+
+## ⌨️ Commandes Utiles
+
+### Commandes principales
+-   `docker-compose up -d --build` : Construire et lancer en arrière-plan.
+-   `docker-compose down` : Arrêter et supprimer les conteneurs.
+-   `docker-compose logs -f [service]` : Voir les logs en temps réel (ex: `backend`).
+-   `docker-compose ps` : Statut détaillé des services.
+-   `docker stats` : Monitorer l'utilisation des ressources.
+
+### Troubleshooting courant
+-   **Problème de connexion DB** : Vérifiez que les variables dans `.env` correspondent à celles de `docker-compose.yml`.
+-   **Port 80 déjà utilisé** : Modifiez le mapping des ports du service `frontend` dans le fichier compose.
+-   **Logs d'erreur DB** : Utilisez `docker logs task-db` pour voir les erreurs d'initialisation Postgres.
+
+---
+
+## 📸 Captures d'Écran Obligatoires
+
+Les captures suivantes sont disponibles dans le dossier `/screenshots/` ou listées ci-dessous :
+
+### 1. État des services (`docker-compose ps`)
+![Services Up/Healthy](./screenshots/1_docker_compose_ps.png)
+*Objectif : Montrer que les 3 services sont Up et sains.*
+
+### 2. Réseaux Docker (`docker network ls`)
+![Docker Networks](./screenshots/2_docker_network_ls.png)
+*Objectif : Démontrer l'existence des réseaux backend-net et frontend-net.*
+
+### 3. Volumes Docker (`docker volume ls`)
+![Docker Volumes](./screenshots/3_docker_volume_ls.png)
+*Objectif : Prouver la persistance des données via le volume task-db-data.*
+
+### 4. Limites de ressources (`docker stats`)
+![Resource Limits](./screenshots/4_docker_stats.png)
+*Objectif : Valider les quotas CPU/RAM appliqués.*
+
+### 5. Interface Frontend Fonctionnelle
+![Frontend Interface](./screenshots/5_frontend_ui.png)
+*Objectif : Vue du dashboard web affichant les tâches.*
+
+### 6. Test d'ajout de données
+![Data Entry Test1](./screenshots/6_add_task_test1.png)
+![Data Entry Test2](./screenshots/6_add_task_test2.png)
+*Objectif : Démonstration de l'ajout réussi d'une tâche via le formulaire.*
+
+### 7. Logs Backend -> Database
+![Logs Connectivity](./screenshots/7_logs_backend_db.png)
+*Objectif : Preuve textuelle de la connexion réussie à PostgreSQL.*
+
+### 8. Test de l'isolation réseau
+![Network Isolation](./screenshots/8_network_isolation.png)
+*Objectif : Échec de la commande `ping database` ou `curl` depuis le conteneur frontend.*
+
+### 9. Statut Health Check (`docker inspect`)
+![Health Check](./screenshots/9_health_check_inspect.png)
+*Objectif : Détails du succès des healthchecks dans la configuration JSON.*
+
+### 10. Comparaison de taille d'image (Multi-stage)
+![Image Size Comparison](./screenshots/10_image_size.png)
+*Note : L'image backend multi-stage est environ 60% plus légère qu'une image standard.*
