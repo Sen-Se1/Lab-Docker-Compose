@@ -2,7 +2,7 @@ FROM nginx:alpine
 
 COPY index.html style.css script.js /usr/share/nginx/html/
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY default.conf.template /etc/nginx/templates/
 
 # Setup permissions for non-root user
 RUN touch /var/run/nginx.pid && \
