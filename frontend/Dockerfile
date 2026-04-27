@@ -4,7 +4,6 @@ COPY index.html style.css script.js /usr/share/nginx/html/
 
 COPY default.conf.template /etc/nginx/templates/
 
-# Setup permissions for non-root user
 RUN touch /var/run/nginx.pid && \
     chown -R nginx:nginx /var/run/nginx.pid /var/cache/nginx /var/log/nginx /etc/nginx/conf.d
 
