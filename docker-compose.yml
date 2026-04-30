@@ -22,6 +22,11 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - backend-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       resources:
         limits:
@@ -37,6 +42,7 @@ services:
     build:
       context: ./backend
     container_name: task-backend
+    user: "appuser"
     restart: unless-stopped
     environment:
       DB_HOST: database
@@ -51,6 +57,11 @@ services:
     networks:
       - backend-net
       - frontend-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       resources:
         limits:
@@ -61,9 +72,10 @@ services:
     build:
       context: ./frontend
     container_name: task-frontend
+    user: "nginx"
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "80:8080"
     environment:
       - API_URL=${API_URL:-http://backend:3000}
     depends_on:
@@ -71,6 +83,11 @@ services:
         condition: service_started
     networks:
       - frontend-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       resources:
         limits:
