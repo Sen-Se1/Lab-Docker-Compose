@@ -5,6 +5,8 @@ metadata:
   namespace: task-app
 spec:
   serviceName: task-postgres
+  updateStrategy:
+    type: RollingUpdate
   replicas: 1
   selector:
     matchLabels:
