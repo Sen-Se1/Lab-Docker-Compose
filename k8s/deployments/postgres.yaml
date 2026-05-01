@@ -18,10 +18,6 @@ spec:
         app: task-app
         component: database
     spec:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 999
-        fsGroup: 999
       containers:
         - name: task-postgres
           image: postgres:15-alpine

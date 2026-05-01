@@ -12,7 +12,6 @@ services:
   database:
     image: postgres:15-alpine
     container_name: task-db
-    user: "999:999"
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-taskdb}
