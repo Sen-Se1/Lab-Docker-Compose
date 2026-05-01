@@ -1,24 +1,8 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: postgres-init-sql
-data:
-  init.sql: |
-    -- Paste the EXACT content of your .\db\init.sql here
-    -- Example:
-    CREATE TABLE IF NOT EXISTS tasks (
-        id SERIAL PRIMARY KEY,
-        title VARCHAR(255) NOT NULL,
-        description TEXT,
-        status VARCHAR(50) DEFAULT 'pending',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: task-postgres
+  namespace: task-app
 spec:
   replicas: 1
   selector:
@@ -36,11 +20,20 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: taskdb
+              valueFrom:
+                secretKeyRef:
+                  name: task-app-secrets
+                  key: POSTGRES_DB
             - name: POSTGRES_USER
-              value: taskuser
+              valueFrom:
+                secretKeyRef:
+                  name: task-app-secrets
+                  key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
-              value: taskpass
+              valueFrom:
+                secretKeyRef:
+                  name: task-app-secrets
+                  key: POSTGRES_PASSWORD
           volumeMounts:
             - name: init-sql
               mountPath: /docker-entrypoint-initdb.d/init.sql
@@ -55,16 +48,3 @@ spec:
         - name: postgres-storage
           persistentVolumeClaim:
             claimName: postgres-pvc
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: task-postgres
-spec:
-  selector:
-    app: task-postgres
-  ports:
-    - port: 5432
-      targetPort: 5432
-  type: ClusterIP
