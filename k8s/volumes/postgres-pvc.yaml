@@ -3,6 +3,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: postgres-pvc
   namespace: task-app
+  labels:
+    app: task-app
+    component: database
 spec:
   accessModes:
     - ReadWriteOnce

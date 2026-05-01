@@ -7,11 +7,13 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: task-frontend
+      app: task-app
+      component: frontend
   template:
     metadata:
       labels:
-        app: task-frontend
+        app: task-app
+        component: frontend
     spec:
       containers:
         - name: task-frontend

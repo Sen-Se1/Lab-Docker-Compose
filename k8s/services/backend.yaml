@@ -5,7 +5,8 @@ metadata:
   namespace: task-app
 spec:
   selector:
-    app: task-backend
+    app: task-app
+    component: backend
   ports:
     - port: 3000
       targetPort: 3000
