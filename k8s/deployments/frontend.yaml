@@ -15,6 +15,9 @@ spec:
         app: task-app
         component: frontend
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
       containers:
         - name: task-frontend
           image: sen5e1/task-frontend:1.0
