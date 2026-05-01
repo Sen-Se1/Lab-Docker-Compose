@@ -12,6 +12,7 @@ services:
   database:
     image: postgres:15-alpine
     container_name: task-db
+    user: "999:999"
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-taskdb}
@@ -42,7 +43,7 @@ services:
     build:
       context: ./backend
     container_name: task-backend
-    user: "appuser"
+    user: "1000:1000"
     restart: unless-stopped
     environment:
       POSTGRES_HOST: database
@@ -72,7 +73,7 @@ services:
     build:
       context: ./frontend
     container_name: task-frontend
-    user: "nginx"
+    user: "101:101"
     restart: unless-stopped
     ports:
       - "80:8080"

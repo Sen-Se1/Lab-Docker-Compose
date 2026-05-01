@@ -6,7 +6,7 @@ COPY --chown=nginx:nginx default.conf.template /etc/nginx/templates/
 RUN touch /var/run/nginx.pid && \
     chown -R nginx:nginx /var/run/nginx.pid /var/cache/nginx /var/log/nginx /etc/nginx/conf.d
 
-USER nginx
+USER 101:101
 
 EXPOSE 8080
 
