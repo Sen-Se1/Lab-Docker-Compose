@@ -25,7 +25,7 @@ spec:
         runAsUser: 101
       containers:
         - name: task-frontend
-          image: sen5e1/task-frontend:1.0
+          image: sen5e1/task-frontend:1.1
           ports:
             - containerPort: 80
           resources:

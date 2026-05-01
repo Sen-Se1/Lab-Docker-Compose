@@ -26,7 +26,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: task-backend
-          image: sen5e1/task-backend:1.0
+          image: sen5e1/task-backend:1.1
           ports:
             - containerPort: 3000
           resources:

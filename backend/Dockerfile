@@ -11,7 +11,8 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-RUN addgroup -g 1000 appgroup && \
+RUN deluser --remove-home node && \
+    addgroup -g 1000 appgroup && \
     adduser -u 1000 -G appgroup -S -D appuser
 USER 1000:1000
 
