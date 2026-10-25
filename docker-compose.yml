@@ -45,7 +45,7 @@ services:
     user: "1000:1000"
     restart: unless-stopped
     environment:
-      POSTGRES_HOST: database
+      POSTGRES_HOST: ${POSTGRES_HOST:-database}
       POSTGRES_DB: ${POSTGRES_DB:-taskdb}
       POSTGRES_USER: ${POSTGRES_USER:-taskuser}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-taskpass}
@@ -68,7 +68,7 @@ services:
           cpus: '0.5'
           memory: 512M
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1"]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:$${BACKEND_PORT:-3000}/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -87,7 +87,7 @@ services:
       backend:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/ || exit 1"]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:$${FRONTEND_PORT:-8080}/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
