@@ -11,10 +11,11 @@ yarn-error.log*
 
 # Docker
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
+
+k8s/04-secret.yaml
+k8s/*secret*.local.yaml
 
 # IDEs
 .vscode/
