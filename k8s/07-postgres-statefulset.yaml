@@ -6,6 +6,7 @@ metadata:
   labels:
     app: taskmaster
     tier: db
+
 spec:
   serviceName: db
   replicas: 1
@@ -22,6 +23,7 @@ spec:
         tier: db
 
     spec:
+      serviceAccountName: db-sa
       automountServiceAccountToken: false
 
       securityContext:
